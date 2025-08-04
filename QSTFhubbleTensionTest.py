@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-QSTF Unified Cosmology Model v2.1
+QSTF Unified Cosmology Model v2.2
 =================================
 This is the complete and final script. It integrates the full statistical
 analysis framework with the new unified physical model where dark matter is
@@ -8,8 +8,10 @@ reinterpreted as solitonic condensates of the spacetime fluid.
 
 This script:
 1. Fits the QSTF model to Planck, SH0ES, TRGB, and DESI BAO data.
-2. Compares the goodness-of-fit to the standard Lambda-CDM model.
-3. Uses the best-fit parameters to make physical predictions for the dark
+2. Displays a detailed breakdown of the chi-squared contributions.
+3. Compares the total goodness-of-fit to the standard Lambda-CDM model
+   and calculates the statistical preference in sigma.
+4. Uses the best-fit parameters to make physical predictions for the dark
    matter core-cusp problem and the S8 tension.
 """
 
@@ -239,6 +241,7 @@ def main():
     qstf_params = tuple(qstf_result.x)
     analyzer.qstf_model.precompute_de_evolution(*qstf_params)
     
+    # --- QSTF Results ---
     d_A_qstf = lambda z, p: analyzer.qstf_model.angular_diameter_distance(z, *p)
     d_H_qstf = lambda z, p: analyzer.qstf_model.hubble_distance(z, *p)
     rs_qstf = lambda p: analyzer.qstf_model.sound_horizon(p)
@@ -250,27 +253,53 @@ def main():
     chi2_qstf_total = chi2_bao_qstf + chi2_h0_qstf + chi2_trgb_qstf + chi2_planck_qstf
 
     print("\n" + "="*55)
-    print("✨ BEST-FIT QSTF MODEL RESULTS (STATISTICAL)")
+    print("✨ BEST-FIT QSTF MODEL: STATISTICAL RESULTS")
     print("="*55)
-    print(f"  - Parameters: H0={qstf_params[0]:.2f}, Omega_m={qstf_params[1]:.4f}, g_self={qstf_params[5]:.4f}")
-    print(f"  - Total Chi-Squared: {chi2_qstf_total:.2f}")
+    print(f"  - Best-Fit Parameters: H0={qstf_params[0]:.2f}, Omega_m={qstf_params[1]:.4f}, g_self={qstf_params[5]:.4f}")
+    print("\n  - Chi-Squared Breakdown:")
+    print(f"    - DESI BAO:       {chi2_bao_qstf:.2f}")
+    print(f"    - SH0ES H0:       {chi2_h0_qstf:.2f}")
+    print(f"    - TRGB H0:        {chi2_trgb_qstf:.2f}")
+    print(f"    - Planck Priors:  {chi2_planck_qstf:.2f}")
+    print("    --------------------")
+    print(f"    - QSTF Total Chi-Sq:  {chi2_qstf_total:.2f}")
+
+    # --- LambdaCDM Comparison ---
+    lcdm_model = LambdaCDM_Model()
+    lcdm_params = (67.4, 0.315) # Standard Planck 2018 values
+    d_A_lcdm = lambda z, p: lcdm_model.angular_diameter_distance(z, p[0], p[1])
+    d_H_lcdm = lambda z, p: lcdm_model.hubble_distance(z, p[0], p[1])
+    rs_lcdm = lambda p: lcdm_model.sound_horizon(p)
     
-    # --- New section for physical predictions ---
+    chi2_bao_lcdm = analyzer.chi2_desi_bao(lcdm_params, d_A_lcdm, d_H_lcdm, rs_lcdm)
+    chi2_h0_lcdm = analyzer.chi2_shoes_h0(lcdm_params)
+    chi2_trgb_lcdm = analyzer.chi2_trgb_h0(lcdm_params)
+    chi2_planck_lcdm = analyzer.chi2_planck((lcdm_params[0], lcdm_params[1], 0.0224, 0), d_A_lcdm, rs_lcdm)
+    chi2_lcdm_total = chi2_bao_lcdm + chi2_h0_lcdm + chi2_trgb_lcdm + chi2_planck_lcdm
+    
+    print("\n  - Model Comparison:")
+    print(f"    - Lambda-CDM Total Chi-Sq: {chi2_lcdm_total:.2f}")
+    
+    delta_chi2 = chi2_lcdm_total - chi2_qstf_total
+    sigma_pref = np.sqrt(delta_chi2) if delta_chi2 > 0 else 0.0
+    print(f"\n  🏆 Statistical Preference for QSTF Model: {sigma_pref:.2f}-sigma")
+    print("="*55)
+    
+    # --- New Physical Predictions ---
     print("\n" + "="*55)
     print("🔬 NEW PHYSICAL PREDICTIONS FROM BEST-FIT MODEL")
     print("="*55)
-    model = analyzer.qstf_model
     
     print("\nCore-Cusp Problem Solution:")
-    radii = np.logspace(-1, 2, 100) # 0.1 to 100 kpc
-    profile, core_radius = model.halo_density_profile(radii, qstf_params)
+    radii = np.logspace(-1, 2, 100)
+    profile, core_radius = analyzer.qstf_model.halo_density_profile(radii, qstf_params)
     print(f"  - Predicted Halo Core Radius: {core_radius:.2f} kpc")
     print(f"  - RESULT: Model naturally produces a flat core instead of a cusp.")
 
     print("\nS8 Tension Solution:")
-    k = 0.1 # Relevant scale in h/Mpc
-    suppression = model.power_spectrum_suppression(k, qstf_params)
-    print(f"  - Predicted Power Suppression at k=0.1 h/Mpc: {(1-suppression)*100:.2f}%")
+    k = 0.1 # h/Mpc
+    suppression = analyzer.qstf_model.power_spectrum_suppression(k, qstf_params)
+    print(f"  - Predicted Power Suppression at k={k} h/Mpc: {(1-suppression)*100:.2f}%")
     print(f"  - RESULT: Model naturally suppresses structure growth, lowering S8.")
     print("="*55 + "\n")
 
