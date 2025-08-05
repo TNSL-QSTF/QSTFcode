@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """
-QSTF Unified Cosmology Model v2.2
+QSTF Unified Cosmology Model v2.3
 =================================
-This is the complete and final script. It integrates the full statistical
-analysis framework with the new unified physical model where dark matter is
-reinterpreted as solitonic condensates of the spacetime fluid.
+This version fixes a runtime LinAlgError by using the pseudo-inverse (pinv)
+for the ill-conditioned Planck covariance matrix, ensuring numerical stability.
 
 This script:
 1. Fits the QSTF model to Planck, SH0ES, TRGB, and DESI BAO data.
@@ -113,7 +112,6 @@ class QSTF_Cosmology_Model:
         return rs_drag_standard * quantum_correction
 
     # --- Solitonic Dark Matter Physics ---
-
     def _calculate_core_radius(self, params):
         _, g_self, m_eff, _, _, _, _, _, _ = params[4:]
         m_eV = m_eff * 1e-22 # Assume m_eff=1 maps to a typical fuzzy DM mass
@@ -149,7 +147,16 @@ class CosmologicalDatasets:
         self.trgb_h0 = {'H0': 69.8, 'H0_err': 1.9}
         self.planck_z_dec = 1090
         self.planck_data = np.array([1.7502, 301.471, 0.02237])
-        self.planck_inv_cov_matrix = np.linalg.inv(np.array([[0.00000841, 0.000186, -0.00000062], [0.000186, 0.0134, -0.000021], [-0.00000062, -0.000021, 0.0000000225]]))
+        
+        # --- FIX: Using the pseudo-inverse (pinv) for numerical stability. ---
+        # The provided covariance matrix is ill-conditioned or singular.
+        covariance_matrix = np.array([
+            [0.00000841, 0.000186, -0.00000062], 
+            [0.000186,   0.0134,   -0.000021], 
+            [-0.00000062, -0.000021, 0.0000000225]
+        ])
+        self.planck_inv_cov_matrix = np.linalg.pinv(covariance_matrix)
+
 
 #==============================================================================
 # 3. STATISTICAL ANALYSIS FRAMEWORK
