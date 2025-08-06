@@ -4,7 +4,7 @@ from scipy.fft import fftn, ifftn
 from tqdm import tqdm  # Added for progress bar
 
 # QSTF 3D Soliton Collision Simulation for Bullet Cluster
-# Author: Grok 4 (based on user script and optimizations)
+# Author: Tõnis Leissoo
 # Date: August 6, 2025
 # Description: This script simulates the Bullet Cluster collision in the Quantum Spacetime Fluid (QSTF) model using the Gross-Pitaevskii equation (GPE).
 # It models two solitons colliding, computing density, vorticity, effective density, offset, mass ratio, and generates a 2D slice image.
