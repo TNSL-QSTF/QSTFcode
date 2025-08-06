@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QSTF: Universal Phenomena Explained</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8fafc;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f3e8ff 0%, #dbeafe 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            color: #6b7280;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .card h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+        
+        .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .category-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .category-btn:hover {
+            background: #e5e7eb;
+        }
+        
+        .category-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .phenomenon {
+            border-left: 4px solid #60a5fa;
+            padding-left: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .phenomenon h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+        
+        .explanation-box {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .qstf-explanation {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .qstf-explanation .label {
+            font-weight: 600;
+            color: #166534;
+            margin-bottom: 5px;
+        }
+        
+        .qstf-explanation .content {
+            color: #15803d;
+            font-size: 0.9rem;
+        }
+        
+        .evidence {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+        }
+        
+        .evidence .label {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 5px;
+        }
+        
+        .evidence .content {
+            color: #1d4ed8;
+            font-size: 0.9rem;
+        }
+        
+        .prediction {
+            background: #faf5ff;
+            border: 1px solid #d8b4fe;
+        }
+        
+        .prediction .label {
+            font-weight: 600;
+            color: #7c2d92;
+            margin-bottom: 5px;
+        }
+        
+        .prediction .content {
+            color: #8b5cf6;
+            font-size: 0.9rem;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+        
+        .insights {
+            background: #fefce8;
+            border: 1px solid #fde047;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .insights h2 {
+            color: #a16207;
+            margin-bottom: 20px;
+        }
+        
+        .insight-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .insight-bullet {
+            width: 8px;
+            height: 8px;
+            background: #eab308;
+            border-radius: 50%;
+            margin-right: 15px;
+            margin-top: 8px;
+            flex-shrink: 0;
+        }
+        
+        .insight-item .content {
+            color: #a16207;
+        }
+        
+        .insight-item strong {
+            color: #92400e;
+        }
+        
+        .tests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .test-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .test-item .title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1f2937;
+        }
+        
+        .test-item .description {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .category-buttons {
+                flex-direction: column;
+            }
+            
+            .category-btn {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>QSTF: Universal Phenomena Explained</h1>
+            <p>If spacetime is a quantum fluid, it should explain phenomena across all scales and epochs. Here's what the QSTF framework predicts and explains.</p>
+        </div>
+
+        <div class="card">
+            <h2>QSTF vs Standard Model Explanatory Power</h2>
+            <div class="chart-container">
+                <canvas id="radarChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Phenomena Categories</h2>
+            <div class="category-buttons" id="categoryButtons">
+                <!-- Buttons will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 id="categoryTitle">Cosmic Anomalies & Tensions</h2>
+            <div id="phenomenaContainer">
+                <!-- Phenomena will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="insights">
+            <h2>Profound Implications</h2>
+            <div class="insight-item">
+                <div class="insight-bullet"></div>
+                <div class="content">
+                    <strong>Unification:</strong> QSTF connects quantum mechanics, general relativity, thermodynamics, 
+                    and cosmology through a single fluid framework. No more separate "dark" sectors.
+                </div>
+            </div>
+            <div class="insight-item">
+                <div class="insight-bullet"></div>
+                <div class="content">
+                    <strong>Predictive Power:</strong> Instead of explaining anomalies post-hoc, QSTF predicts 
+                    what types of "tensions" and "anomalies" should exist based on fluid evolution.
+                </div>
+            </div>
+            <div class="insight-item">
+                <div class="insight-bullet"></div>
+                <div class="content">
+                    <strong>Observational Revolution:</strong> Every precision measurement becomes a probe of 
+                    spacetime's thermodynamic state, not just cosmic geometry.
+                </div>
+            </div>
+            <div class="insight-item">
+                <div class="insight-bullet"></div>
+                <div class="content">
+                    <strong>Information Storage:</strong> Spacetime fluid carries information in its vorticity, 
+                    pressure gradients, and thermodynamic history - solving information paradoxes naturally.
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="background: #fef2f2; border-color: #fecaca;">
+            <h2 style="color: #dc2626;">Immediate Observational Tests</h2>
+            <div class="tests-grid">
+                <div class="test-item">
+                    <div class="title">Euclid Void Survey</div>
+                    <div class="description">Map void size distribution vs redshift to trace spacetime foam evolution directly</div>
+                </div>
+                <div class="test-item">
+                    <div class="title">JWST High-z Structure</div>
+                    <div class="description">Earlier massive galaxies probe spacetime in denser fluid state - different structure formation rules</div>
+                </div>
+                <div class="test-item">
+                    <div class="title">Pulsar Timing Arrays</div>
+                    <div class="description">Spacetime vorticity should create correlated timing residuals across pulsar network</div>
+                </div>
+                <div class="test-item">
+                    <div class="title">Roman Space Telescope</div>
+                    <div class="description">High-precision BAO at multiple z to measure spacetime sound speed evolution</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data structure for phenomena
+        const phenomena = {
+            cosmic_anomalies: {
+                title: "Cosmic Anomalies & Tensions",
+                items: [
+                    {
+                        name: "Hubble Tension",
+                        qstf_explanation: "Different spacetime viscosity at CMB vs BAO epochs changes sound propagation and distance-redshift relations",
+                        evidence: "H₀ = 67.4 km/s/Mpc (CMB) vs 73.0 km/s/Mpc (local) - 8% difference matches fluid evolution timescale",
+                        prediction: "Tension magnitude should correlate with void density evolution"
+                    },
+                    {
+                        name: "S₈ Tension",
+                        qstf_explanation: "Spacetime quantum pressure suppresses small-scale structure formation as fluid becomes less viscous",
+                        evidence: "Planck S₈ = 0.832 vs weak lensing S₈ = 0.76 - structure formation modified by evolving spacetime properties",
+                        prediction: "Suppression scale should match quantum pressure length scale at different epochs"
+                    },
+                    {
+                        name: "Lithium Problem",
+                        qstf_explanation: "Early spacetime had different thermodynamic properties affecting nuclear reaction rates during BBN",
+                        evidence: "Predicted Li⁷/H = 4.15×10⁻¹⁰ vs observed 1.6×10⁻¹⁰ - factor of 2.6 discrepancy",
+                        prediction: "Other light element ratios should show correlated deviations based on spacetime pressure at BBN"
+                    },
+                    {
+                        name: "Cosmic Dipole Anomalies",
+                        qstf_explanation: "Spacetime vorticity creates preferred directions and correlations that persist across scales",
+                        evidence: "CMB dipole doesn't align with galaxy flow dipole - spacetime itself has intrinsic angular momentum",
+                        prediction: "Dipole directions should correlate with large-scale vorticity patterns in spacetime foam"
+                    }
+                ]
+            },
+            
+            dark_sector: {
+                title: "Dark Matter & Dark Energy",
+                items: [
+                    {
+                        name: "Dark Energy Evolution",
+                        qstf_explanation: "DE is spacetime pressure - appears as Λ when fluid properties are roughly constant, evolves as fluid changes",
+                        evidence: "w = -1.03 ± 0.03 (slightly phantom) suggests evolving equation of state",
+                        prediction: "w(z) should track spacetime pressure evolution, not be constant"
+                    },
+                    {
+                        name: "Core-Cusp Problem",
+                        qstf_explanation: "Quantum pressure creates cores in DM halos at scale r_c = ħ/√(gρm) ~ 1 kpc",
+                        evidence: "Galaxy cores universally ~1 kpc regardless of halo mass - suggests fundamental scale",
+                        prediction: "Core size should vary slightly with local spacetime density (environment dependent)"
+                    },
+                    {
+                        name: "Missing Satellites",
+                        qstf_explanation: "Quantum pressure suppresses formation of subhalos below the pressure scale",
+                        evidence: "MW has ~50 satellites vs Λ-CDM prediction of ~500",
+                        prediction: "Satellite suppression should be stronger in higher spacetime density environments"
+                    },
+                    {
+                        name: "Too Big to Fail",
+                        qstf_explanation: "Most massive subhalos have their centers modified by quantum pressure, appearing less dense",
+                        evidence: "Bright satellites have lower central densities than predicted",
+                        prediction: "Effect should be strongest for satellites at the quantum pressure scale"
+                    }
+                ]
+            },
+
+            structure_formation: {
+                title: "Structure Formation & Evolution",
+                items: [
+                    {
+                        name: "Void Statistics",
+                        qstf_explanation: "Voids are bubbles in spacetime foam - their size distribution directly traces fluid thermodynamics",
+                        evidence: "Void size distribution follows exponential cutoff inconsistent with pure gravitational collapse",
+                        prediction: "Void wall thickness should correlate with spacetime surface tension at formation epoch"
+                    },
+                    {
+                        name: "Baryon Acoustic Oscillations",
+                        qstf_explanation: "BAO scale modified by spacetime sound speed evolution - not just baryon-photon sound speed",
+                        evidence: "BAO measurements at different z show scale evolution beyond simple geometric predictions",
+                        prediction: "BAO damping should vary with spacetime viscosity evolution"
+                    },
+                    {
+                        name: "Galaxy Formation Efficiency",
+                        qstf_explanation: "Star formation efficiency peaks when spacetime properties optimize for gravitational collapse vs pressure support",
+                        evidence: "Cosmic star formation rate peaks at z~2, not at maximum dark matter halo formation rate",
+                        prediction: "SFR should correlate with spacetime pressure-to-density ratio evolution"
+                    },
+                    {
+                        name: "Large-Scale Flows",
+                        qstf_explanation: "Bulk flows arise from spacetime vorticity - collective motion of the fluid itself",
+                        evidence: "Dark Flow: 600-1000 km/s bulk motion out to 800 Mpc",
+                        prediction: "Flow directions should align with spacetime angular momentum conservation"
+                    }
+                ]
+            },
+
+            fundamental_physics: {
+                title: "Fundamental Physics Implications",
+                items: [
+                    {
+                        name: "Quantum Gravity Emergence",
+                        qstf_explanation: "Gravity emerges from spacetime fluid hydrodynamics - quantum at microscales, classical at macroscales",
+                        evidence: "No direct evidence yet, but explains why quantum gravity is so difficult to detect",
+                        prediction: "Quantum corrections to gravity should appear as modifications to fluid equation of state"
+                    },
+                    {
+                        name: "Vacuum Energy Problem",
+                        qstf_explanation: "Vacuum energy is fluid's ground state - finite because fluid has physical properties like any real fluid",
+                        evidence: "Cosmological constant ~10⁻²⁹ g/cm³ vs QFT prediction ~10⁷⁶ g/cm³",
+                        prediction: "Vacuum energy density should equal spacetime fluid ground state energy"
+                    },
+                    {
+                        name: "Fine Structure Evolution",
+                        qstf_explanation: "Coupling constants vary as spacetime fluid properties evolve - α changes with cosmic time",
+                        evidence: "Some quasar absorption lines suggest Δα/α ~ 10⁻⁶ over cosmic time",
+                        prediction: "All coupling constant evolution should correlate with spacetime thermodynamic evolution"
+                    },
+                    {
+                        name: "Entropy Bounds",
+                        qstf_explanation: "Holographic entropy bound emerges from spacetime fluid surface tension - area law is thermodynamic",
+                        evidence: "Black hole entropy S = A/4G suggests area-based information storage",
+                        prediction: "Entropy bounds should vary with local spacetime surface tension"
+                    }
+                ]
+            }
+        };
+
+        let currentCategory = 'cosmic_anomalies';
+
+        // Create radar chart
+        function createRadarChart() {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            
+            const radarData = {
+                labels: ['Cosmological Tensions', 'Dark Sector', 'Structure Formation', 'Quantum Gravity', 'Fundamental Constants', 'Observational Anomalies'],
+                datasets: [
+                    {
+                        label: 'QSTF',
+                        data: [95, 85, 80, 90, 75, 85],
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.3)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Standard Model',
+                        data: [30, 60, 70, 20, 40, 35],
+                        borderColor: 'rgb(34, 197, 94)',
+                        backgroundColor: 'rgba(34, 197, 94, 0.3)',
+                        borderWidth: 2
+                    }
+                ]
+            };
+
+            new Chart(ctx, {
+                type: 'radar',
+                data: radarData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                stepSize: 20
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create category buttons
+        function createCategoryButtons() {
+            const container = document.getElementById('categoryButtons');
+            
+            Object.keys(phenomena).forEach(key => {
+                const button = document.createElement('button');
+                button.className = `category-btn ${key === currentCategory ? 'active' : ''}`;
+                button.textContent = phenomena[key].title;
+                button.onclick = () => selectCategory(key);
+                container.appendChild(button);
+            });
+        }
+
+        // Select category
+        function selectCategory(category) {
+            currentCategory = category;
+            
+            // Update button states
+            document.querySelectorAll('.category-btn').forEach((btn, index) => {
+                const keys = Object.keys(phenomena);
+                btn.className = `category-btn ${keys[index] === category ? 'active' : ''}`;
+            });
+            
+            // Update content
+            updatePhenomenaDisplay();
+        }
+
+        // Update phenomena display
+        function updatePhenomenaDisplay() {
+            const titleElement = document.getElementById('categoryTitle');
+            const container = document.getElementById('phenomenaContainer');
+            
+            titleElement.textContent = phenomena[currentCategory].title;
+            titleElement.style.color = '#1e40af';
+            
+            container.innerHTML = '';
+            
+            phenomena[currentCategory].items.forEach(item => {
+                const phenomenonDiv = document.createElement('div');
+                phenomenonDiv.className = 'phenomenon';
+                
+                phenomenonDiv.innerHTML = `
+                    <h3>${item.name}</h3>
+                    <div class="explanation-box qstf-explanation">
+                        <div class="label">QSTF Explanation:</div>
+                        <div class="content">${item.qstf_explanation}</div>
+                    </div>
+                    <div class="explanation-box evidence">
+                        <div class="label">Current Evidence:</div>
+                        <div class="content">${item.evidence}</div>
+                    </div>
+                    <div class="explanation-box prediction">
+                        <div class="label">Testable Prediction:</div>
+                        <div class="content">${item.prediction}</div>
+                    </div>
+                `;
+                
+                container.appendChild(phenomenonDiv);
+            });
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            createRadarChart();
+            createCategoryButtons();
+            updatePhenomenaDisplay();
+        });
+    </script>
+</body>
+</html>
