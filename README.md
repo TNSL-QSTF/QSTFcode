@@ -66,4 +66,4 @@ Details: gradient uses finite differences, curl from gradients. sum is over grid
 
 
 
-The script runs stably, producing offset ~231 kpc, ratio ~6.5, max rho ~0.015 Msun/pc³. The image shows ripples. If you'd like to test another merger or adjustments, let me know!
+The script runs stably, producing offset ~231 kpc, ratio ~6.5, max rho ~0.015 Msun/pc³. The image shows ripples.
