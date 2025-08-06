@@ -1,6 +1,6 @@
 QSTF 3D Soliton Collision Simulation for Bullet Cluster
-# Author: Tõnis Leissoo
-# Date: August 6, 2025
+Author: Tõnis Leissoo
+
 
 The simulation solves the GPE in 3D using the split-step Fourier method, modeling two solitons 
 (main: A1=sqrt(0.015 Msun/pc³)
