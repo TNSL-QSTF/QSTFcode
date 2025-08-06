@@ -1,6 +1,6 @@
 Detailed Explanation of the QSTF 3D Simulation Script Steps
 The script you provided simulates the Bullet Cluster merger in the Quantum Spacetime Fluid (QSTF) model by evolving the wavefunction Ψ of the superfluid spacetime using the Gross-Pitaevskii equation (GPE). The GPE is a nonlinear Schrödinger equation that describes the dynamics of a Bose-Einstein condensate-like fluid, where the wavefunction Ψ encodes the density and phase of the fluid. In QSTF, this models spacetime as a quantum fluid, with solitons (stable wave packets) representing gravitational masses that collide collisionlessly, producing observed features like gas-lensing offsets without dark matter (DM).
-The script is structured to set up the simulation environment, initialize the solitons, evolve the system over time, compute physical quantities, and visualize a 2D slice. Below, I expand on each step in your breakdown, explaining the physics, math, and code purpose in detail. This is based on the script's implementation as of August 6, 2025, with parameters tuned for the Bullet Cluster (e.g., collision velocity 4740 km/s, time 150 Myr, resulting in ~230 kpc offset).
+The script is structured to set up the simulation environment, initialize the solitons, evolve the system over time, compute physical quantities, and visualize a 2D slice. Below, I expand on each step in your breakdown, explaining the physics, math, and code purpose in detail. Parameters are tuned for the Bullet Cluster (e.g., collision velocity 4740 km/s, time 150 Myr, resulting in ~230 kpc offset).
 
 
 Import Libraries: Imports NumPy for numerical operations, Matplotlib for plotting, and SciPy's fftn/ifftn for Fourier transforms.
@@ -13,7 +13,7 @@ Details: Without FFTs, solving the 3D GPE directly would be computationally proh
 Define Constants: Sets physical constants like ħ, G, Msun, kpc, and scales ħ_kpc for astrophysical units (kpc, Msun, Myr).
 
 Purpose and Physics: These constants convert between SI units (e.g., ħ in erg s) and astrophysical units (kpc for length, Msun for mass, Myr for time) to make the simulation numerically stable and physically meaningful. For example, ħ_kpc = ħ * s_to_yr * 1e6 / (Msun * kpc) scales the quantum term for galactic scales, ensuring the de Broglie wavelength λ = ħ / (m v) ~1 kpc for core formation. G = 4.302e-3 pc/Msun (km/s)^2 is the gravitational constant in convenient units for V_ext.
-Details: The scaling avoids underflow/overflow (e.g., t_collision_s = 150e6 yr * s_to_yr ~4.73e15 s is huge, but v_x_normalized = v_collision * kpc_per_Myr / 2 converts velocity to kpc/Myr ~4.86 kpc/Myr, so xi1 = (X - v_x_normalized * t_collision) / w1 stays reasonable (~10–100, where cosh is computable). Without scaling, arguments to cosh would be >>1, causing overflow as you experienced.
+Details: The scaling avoids underflow/overflow (e.g., t_collision_s = 150e6 yr * s_to_yr ~4.73e15 s is huge, but v_x_normalized = v_collision * kpc_per_Myr / 2 converts velocity to kpc/Myr ~4.86 kpc/Myr, so xi1 = (X - v_x_normalized * t_collision) / w1 stays reasonable (~10–100, where cosh is computable). Without scaling, arguments to cosh would be >>1, causing overflow.
 
 
 
